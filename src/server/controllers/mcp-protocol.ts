@@ -10,7 +10,7 @@ export class MCPProtocolHandler {
     private searchService: SearchService
   ) {}
 
-  async handleMCPRequest(req: Request, res: Response) {
+  async handleMCPRequest(req: Request, res: Response): Promise<Response> {
     const { function_name, parameters } = req.body;
 
     try {
@@ -38,7 +38,7 @@ export class MCPProtocolHandler {
     }
   }
 
-  private async handleFetchContent(parameters: any, res: Response) {
+  private async handleFetchContent(parameters: any, res: Response): Promise<Response> {
     const { url } = parameters;
     if (!url) {
       return res.status(400).json({ error: 'URL parameter is required' });
@@ -59,7 +59,7 @@ export class MCPProtocolHandler {
     });
   }
 
-  private async handleSearchContent(parameters: any, res: Response) {
+  private async handleSearchContent(parameters: any, res: Response): Promise<Response> {
     const { url, query } = parameters;
     if (!url || !query) {
       return res.status(400).json({ error: 'URL and query parameters are required' });
@@ -72,7 +72,7 @@ export class MCPProtocolHandler {
     });
   }
 
-  private async handleGetMetadata(parameters: any, res: Response) {
+  private async handleGetMetadata(parameters: any, res: Response): Promise<Response> {
     const { url } = parameters;
     if (!url) {
       return res.status(400).json({ error: 'URL parameter is required' });
