@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL-MCP</title>
+    <style>
+        .code-block {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .code-block h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        .code-block p {
+            margin: 0.5rem 0;
+        }
+        .code-block code {
+            background: #e9ecef;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .code-block pre {
+            background: #2c3e50;
+            color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+            font-weight: 500;
+        }
+        input[type="url"], input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        #result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f8f9fa;
+            white-space: pre-wrap;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            margin-bottom: -1px;
+        }
+        .tab.active {
+            background: white;
+            border: 1px solid #ddd;
+            border-bottom-color: white;
+            border-radius: 4px 4px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>URL-MCP</h1>
+        <p>Transform any web page into an MCP endpoint</p>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="fetch">Fetch Content</div>
+            <div class="tab" data-tab="search">Search Content</div>
+            <div class="tab" data-tab="metadata">Get Metadata</div>
+            <div class="tab" data-tab="mcp">MCP Integration</div>
+        </div>
+
+        <div id="fetch-form" class="form">
+            <div class="form-group">
+                <label for="url">URL to Process:</label>
+                <input type="url" id="url" placeholder="https://example.com" required>
+            </div>
+            <button onclick="fetchContent()">Fetch Content</button>
+        </div>
+
+        <div id="search-form" class="form" style="display: none;">
+            <div class="form-group">
+                <label for="search-url">URL to Search:</label>
+                <input type="url" id="search-url" placeholder="https://example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="query">Search Query:</label>
+                <input type="text" id="query" placeholder="Enter search terms" required>
+            </div>
+            <button onclick="searchContent()">Search Content</button>
+        </div>
+
+        <div id="metadata-form" class="form" style="display: none;">
+            <div class="form-group">
+                <label for="metadata-url">URL for Metadata:</label>
+                <input type="url" id="metadata-url" placeholder="https://example.com" required>
+            </div>
+            <button onclick="getMetadata()">Get Metadata</button>
+        </div>
+
+        <div id="mcp-form" class="form" style="display: none;">
+            <h2>MCP Integration Instructions</h2>
+            <div class="code-block">
+                <h3>1. For Cursor:</h3>
+                <p>Add to <code>~/.cursor/mcp.json</code>:</p>
+                <pre>{
+  "mcpServers": {
+    "URL-MCP": {
+      "url": "http://localhost:3000"
+    }
+  }
+}</pre>
+
+                <h3>2. For Windsurf:</h3>
+                <p>Add to <code>~/.codeium/windsurf/mcp_config.json</code>:</p>
+                <pre>{
+  "mcpServers": {
+    "URL-MCP": {
+      "serverUrl": "http://localhost:3000"
+    }
+  }
+}</pre>
+
+                <h3>Available MCP Functions:</h3>
+                <pre>{
+  "function_name": "fetch_url_content",
+  "parameters": {
+    "url": "https://example.com"
+  }
+}
+
+{
+  "function_name": "search_url_content",
+  "parameters": {
+    "url": "https://example.com",
+    "query": "search terms"
+  }
+}
+
+{
+  "function_name": "get_url_metadata",
+  "parameters": {
+    "url": "https://example.com"
+  }
+}</pre>
+            </div>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.form').forEach(f => f.style.display = 'none');
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-form`).style.display = 'block';
+            });
+        });
+
+        function showResult(data) {
+            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function fetchContent() {
+            const url = document.getElementById('url').value;
+            try {
+                const response = await fetch(`/api/fetch_url_content?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+                showResult(data);
+            } catch (error) {
+                showResult({ error: error.message });
+            }
+        }
+
+        async function searchContent() {
+            const url = document.getElementById('search-url').value;
+            const query = document.getElementById('query').value;
+            try {
+                const response = await fetch(`/api/search_url_content?url=${encodeURIComponent(url)}&query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                showResult(data);
+            } catch (error) {
+                showResult({ error: error.message });
+            }
+        }
+
+        async function getMetadata() {
+            const url = document.getElementById('metadata-url').value;
+            try {
+                const response = await fetch(`/api/get_url_metadata?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+                showResult(data);
+            } catch (error) {
+                showResult({ error: error.message });
+            }
+        }
+    </script>
+</body>
+</html>
