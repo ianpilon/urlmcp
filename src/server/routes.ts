@@ -17,9 +17,27 @@ const mcpController = new MCPController(urlProcessor, contentStore, searchServic
 const mcpProtocolHandler = new MCPProtocolHandler(urlProcessor, contentStore, searchService);
 
 // REST API routes
-router.get('/fetch_url_content', mcpController.fetchUrlContent as RequestHandler);
-router.get('/search_url_content', mcpController.searchUrlContent as RequestHandler);
-router.get('/get_url_metadata', mcpController.getUrlMetadata as RequestHandler);
+router.get('/fetch_url_content', (async (req, res, next) => {
+  try {
+    await mcpController.fetchUrlContent(req, res);
+  } catch (error) {
+    next(error);
+  }
+}) as RequestHandler);
+router.get('/search_url_content', (async (req, res, next) => {
+  try {
+    await mcpController.searchUrlContent(req, res);
+  } catch (error) {
+    next(error);
+  }
+}) as RequestHandler);
+router.get('/get_url_metadata', (async (req, res, next) => {
+  try {
+    await mcpController.getUrlMetadata(req, res);
+  } catch (error) {
+    next(error);
+  }
+}) as RequestHandler);
 
 // MCP Protocol routes
 router.post('/mcp', (async (req, res, next) => {

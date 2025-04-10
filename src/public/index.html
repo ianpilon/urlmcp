@@ -207,41 +207,64 @@
             });
         });
 
-        function showResult(data) {
-            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
-        }
-
         async function fetchContent() {
-            const url = document.getElementById('url').value;
             try {
+                const url = document.getElementById('urlInput').value;
                 const response = await fetch(`/api/fetch_url_content?url=${encodeURIComponent(url)}`);
-                const data = await response.json();
-                showResult(data);
+                const contentType = response.headers.get('content-type');
+                let data;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    data = { error: `Invalid response type: ${contentType}. Response: ${text.substring(0, 100)}...` };
+                }
+                
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
             } catch (error) {
-                showResult({ error: error.message });
+                document.getElementById('result').textContent = JSON.stringify({ error: error.message }, null, 2);
             }
         }
 
         async function searchContent() {
-            const url = document.getElementById('search-url').value;
-            const query = document.getElementById('query').value;
             try {
+                const url = document.getElementById('searchUrlInput').value;
+                const query = document.getElementById('searchQueryInput').value;
                 const response = await fetch(`/api/search_url_content?url=${encodeURIComponent(url)}&query=${encodeURIComponent(query)}`);
-                const data = await response.json();
-                showResult(data);
+                const contentType = response.headers.get('content-type');
+                let data;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    data = { error: `Invalid response type: ${contentType}. Response: ${text.substring(0, 100)}...` };
+                }
+                
+                document.getElementById('searchResult').textContent = JSON.stringify(data, null, 2);
             } catch (error) {
-                showResult({ error: error.message });
+                document.getElementById('searchResult').textContent = JSON.stringify({ error: error.message }, null, 2);
             }
         }
 
         async function getMetadata() {
-            const url = document.getElementById('metadata-url').value;
             try {
+                const url = document.getElementById('metadataUrlInput').value;
                 const response = await fetch(`/api/get_url_metadata?url=${encodeURIComponent(url)}`);
-                const data = await response.json();
-                showResult(data);
+                const contentType = response.headers.get('content-type');
+                let data;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    data = { error: `Invalid response type: ${contentType}. Response: ${text.substring(0, 100)}...` };
+                }
+                
+                document.getElementById('metadataResult').textContent = JSON.stringify(data, null, 2);
             } catch (error) {
-                showResult({ error: error.message });
+                document.getElementById('metadataResult').textContent = JSON.stringify({ error: error.message }, null, 2);
             }
         }
     </script>
