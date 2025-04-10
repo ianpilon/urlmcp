@@ -120,7 +120,7 @@
         <div id="fetch-form" class="form">
             <div class="form-group">
                 <label for="url">URL to Process:</label>
-                <input type="url" id="url" placeholder="https://example.com" required>
+                <input type="url" id="urlInput" placeholder="https://example.com" required>
             </div>
             <button onclick="fetchContent()">Fetch Content</button>
         </div>
@@ -128,11 +128,11 @@
         <div id="search-form" class="form" style="display: none;">
             <div class="form-group">
                 <label for="search-url">URL to Search:</label>
-                <input type="url" id="search-url" placeholder="https://example.com" required>
+                <input type="url" id="searchUrlInput" placeholder="https://example.com" required>
             </div>
             <div class="form-group">
                 <label for="query">Search Query:</label>
-                <input type="text" id="query" placeholder="Enter search terms" required>
+                <input type="text" id="searchQueryInput" placeholder="Enter search terms" required>
             </div>
             <button onclick="searchContent()">Search Content</button>
         </div>
@@ -140,7 +140,7 @@
         <div id="metadata-form" class="form" style="display: none;">
             <div class="form-group">
                 <label for="metadata-url">URL for Metadata:</label>
-                <input type="url" id="metadata-url" placeholder="https://example.com" required>
+                <input type="url" id="metadataUrlInput" placeholder="https://example.com" required>
             </div>
             <button onclick="getMetadata()">Get Metadata</button>
         </div>
